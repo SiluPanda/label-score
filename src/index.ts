@@ -31,3 +31,8 @@ export {
   assertMinAnnotators,
   detectDuplicates,
 } from './validate';
+export { cohenKappa } from './metrics/cohen-kappa';
+export { fleissKappa } from './metrics/fleiss-kappa';
+export { scottPi } from './metrics/scott-pi';
+export { krippendorffAlpha } from './metrics/krippendorff-alpha';
+export { gwetAC1 } from './metrics/gwet-ac1';
