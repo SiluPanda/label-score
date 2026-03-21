@@ -1,6 +1,6 @@
 {
   "name": "label-score",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Inter-annotator agreement metrics in JavaScript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
