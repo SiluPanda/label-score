@@ -3,6 +3,7 @@
 Inter-annotator agreement metrics for JavaScript and TypeScript. Zero dependencies.
 
 [![npm version](https://img.shields.io/npm/v/label-score.svg)](https://www.npmjs.com/package/label-score)
+[![npm downloads](https://img.shields.io/npm/dt/label-score.svg)](https://www.npmjs.com/package/label-score)
 [![license](https://img.shields.io/npm/l/label-score.svg)](https://github.com/SiluPanda/label-score/blob/master/LICENSE)
 [![node](https://img.shields.io/node/v/label-score.svg)](https://nodejs.org)
 
