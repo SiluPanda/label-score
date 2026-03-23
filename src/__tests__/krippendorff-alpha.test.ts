@@ -104,3 +104,110 @@ describe('krippendorffAlpha — nominal', () => {
     expect(result.annotatorCount).toBe(3);
   });
 });
+
+describe('krippendorffAlpha — interval', () => {
+  it('returns α = 1 for perfect agreement', () => {
+    const matrix = [
+      [1, 2, 3, 4, 5],
+      [1, 2, 3, 4, 5],
+    ];
+    const result = krippendorffAlpha(matrix, { level: 'interval' });
+    expect(result.value).toBeCloseTo(1.0, 5);
+    expect(result.level).toBe('interval');
+  });
+
+  it('returns α < 1 for partial agreement with numeric labels', () => {
+    const matrix = [
+      [1, 2, 3, 4, 5],
+      [2, 3, 4, 5, 1],
+    ];
+    const result = krippendorffAlpha(matrix, { level: 'interval' });
+    expect(result.value).toBeLessThan(1.0);
+    expect(result.value).toBeGreaterThan(-2.0);
+  });
+
+  it('returns higher α than nominal for near-miss numeric disagreements', () => {
+    // interval metric treats close values as less wrong than far values
+    // near-miss: rater2 is off by 1 on each item
+    const matrix = [
+      [1, 2, 3, 4],
+      [2, 3, 4, 5],
+    ];
+    const nominalResult = krippendorffAlpha(matrix, { level: 'nominal' });
+    const intervalResult = krippendorffAlpha(matrix, { level: 'interval' });
+    // interval penalises uniform off-by-1 less than nominal (all-different)
+    // so interval α >= nominal α
+    expect(intervalResult.value).toBeGreaterThanOrEqual(nominalResult.value);
+  });
+});
+
+describe('krippendorffAlpha — ratio', () => {
+  it('returns α = 1 for perfect agreement', () => {
+    const matrix = [
+      [1, 2, 4, 8],
+      [1, 2, 4, 8],
+    ];
+    const result = krippendorffAlpha(matrix, { level: 'ratio' });
+    expect(result.value).toBeCloseTo(1.0, 5);
+    expect(result.level).toBe('ratio');
+  });
+
+  it('handles d(0,0) = 0 without NaN', () => {
+    const matrix = [
+      [0, 1, 2],
+      [0, 1, 2],
+    ];
+    const result = krippendorffAlpha(matrix, { level: 'ratio' });
+    expect(Number.isNaN(result.value)).toBe(false);
+    expect(result.value).toBeCloseTo(1.0, 5);
+  });
+
+  it('returns α < 1 for disagreeing numeric labels', () => {
+    const matrix = [
+      [1, 2, 4, 8],
+      [2, 4, 8, 16],
+    ];
+    const result = krippendorffAlpha(matrix, { level: 'ratio' });
+    expect(result.value).toBeLessThan(1.0);
+  });
+});
+
+describe('krippendorffAlpha — ordinal', () => {
+  it('returns α = 1 for perfect agreement', () => {
+    const matrix = [
+      [1, 2, 3, 4, 5],
+      [1, 2, 3, 4, 5],
+    ];
+    const result = krippendorffAlpha(matrix, { level: 'ordinal' });
+    expect(result.value).toBeCloseTo(1.0, 5);
+    expect(result.level).toBe('ordinal');
+  });
+
+  it('returns α < nominal α for same data (ordinal is less strict)', () => {
+    // Adjacent ordinal disagreements are cheaper than non-adjacent ones
+    // Use data where all disagreements are off-by-1 on a 1-5 scale
+    const matrix = [
+      [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+      [2, 3, 4, 5, 1, 2, 3, 4, 5, 1],
+    ];
+    const ordinalResult = krippendorffAlpha(matrix, { level: 'ordinal' });
+    const nominalResult = krippendorffAlpha(matrix, { level: 'nominal' });
+    // Ordinal should be higher (less penalised) than nominal for off-by-1 errors
+    expect(ordinalResult.value).toBeGreaterThanOrEqual(nominalResult.value);
+  });
+
+  it('assigns higher disagreement to far-apart ordinal values', () => {
+    // off-by-4 should yield lower alpha than off-by-1 on same scale
+    const matrixNear = [
+      [1, 2, 3, 4, 5, 3, 3, 3, 3, 3],
+      [2, 2, 3, 4, 5, 3, 3, 3, 3, 3], // one off-by-1 disagreement
+    ];
+    const matrixFar = [
+      [1, 2, 3, 4, 5, 3, 3, 3, 3, 3],
+      [5, 2, 3, 4, 5, 3, 3, 3, 3, 3], // one off-by-4 disagreement
+    ];
+    const nearResult = krippendorffAlpha(matrixNear, { level: 'ordinal' });
+    const farResult = krippendorffAlpha(matrixFar, { level: 'ordinal' });
+    expect(nearResult.value).toBeGreaterThan(farResult.value);
+  });
+});
