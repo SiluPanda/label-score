@@ -12,6 +12,7 @@ import type { Interpretation, AlphaInterpretation } from './types';
  *   value ≥ 0.80    → 'almost-perfect'
  */
 export function interpretKappa(value: number): Interpretation {
+  if (Number.isNaN(value)) return 'poor';
   if (value < 0) return 'poor';
   if (value < 0.20) return 'slight';
   if (value < 0.40) return 'fair';
@@ -29,6 +30,7 @@ export function interpretKappa(value: number): Interpretation {
  *   value ≥ 0.800       → 'reliable'
  */
 export function interpretAlpha(value: number): AlphaInterpretation {
+  if (Number.isNaN(value)) return 'unreliable';
   if (value < 0.667) return 'unreliable';
   if (value < 0.800) return 'tentative';
   return 'reliable';

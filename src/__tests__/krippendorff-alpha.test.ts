@@ -93,4 +93,14 @@ describe('krippendorffAlpha — nominal', () => {
     const result = krippendorffAlpha(matrix, { level: 'interval' });
     expect(result.level).toBe('interval');
   });
+
+  it('handles ragged matrix where later raters have more items', () => {
+    const result = krippendorffAlpha([
+      ['A', 'B'],           // rater 0: 2 items
+      ['A', 'B', 'A'],      // rater 1: 3 items (item 2 is only annotated by rater 1)
+      ['A', 'B', 'A'],      // rater 2: 3 items
+    ]);
+    expect(result.itemCount).toBe(3);
+    expect(result.annotatorCount).toBe(3);
+  });
 });
