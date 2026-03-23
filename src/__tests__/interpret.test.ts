@@ -45,6 +45,10 @@ describe('interpretKappa', () => {
   it('returns "almost-perfect" for 1.0 (perfect agreement)', () => {
     expect(interpretKappa(1.0)).toBe('almost-perfect');
   });
+
+  it('returns "poor" for NaN', () => {
+    expect(interpretKappa(NaN)).toBe('poor');
+  });
 });
 
 describe('interpretAlpha', () => {
@@ -70,5 +74,9 @@ describe('interpretAlpha', () => {
 
   it('returns "reliable" for 1.0 (perfect reliability)', () => {
     expect(interpretAlpha(1.0)).toBe('reliable');
+  });
+
+  it('returns "unreliable" for NaN', () => {
+    expect(interpretAlpha(NaN)).toBe('unreliable');
   });
 });

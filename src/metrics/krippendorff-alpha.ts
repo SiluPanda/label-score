@@ -34,7 +34,7 @@ export function krippendorffAlpha(
   const nRaters = matrix.length;
   assertMinAnnotators(nRaters);
 
-  const nItems = matrix[0].length;
+  const nItems = Math.max(...matrix.map(row => row.length));
   if (nItems === 0) {
     throw new Error('Array must be non-empty');
   }

@@ -159,7 +159,6 @@ Computes Fleiss' Kappa for multiple raters (N >= 2).
 | `interpretation` | `Interpretation` | Landis & Koch interpretation label. |
 | `annotatorCount` | `number` | Number of raters per subject (row sum). |
 | `itemCount` | `number` | Number of subjects (rows). |
-| `perCategory` | `Record<string, number>` | Optional. Per-category kappa values. |
 | `ci` | `ConfidenceInterval` | Optional. Confidence interval if requested. |
 
 **Example:**
@@ -511,7 +510,7 @@ All TypeScript types are exported from the package entry point.
 | Type | Description |
 |------|-------------|
 | `KappaResult` | Result from `cohenKappa`. Fields: `metric`, `value`, `observed`, `expected`, `interpretation`, `categories?`, `ci?`. |
-| `FleissKappaResult` | Result from `fleissKappa`. Fields: `metric`, `value`, `observed`, `expected`, `interpretation`, `annotatorCount`, `itemCount`, `perCategory?`, `ci?`. |
+| `FleissKappaResult` | Result from `fleissKappa`. Fields: `metric`, `value`, `observed`, `expected`, `interpretation`, `annotatorCount`, `itemCount`, `ci?`. |
 | `PiResult` | Result from `scottPi`. Fields: `metric`, `value`, `observed`, `expected`, `interpretation`, `categories?`, `ci?`. |
 | `AlphaResult` | Result from `krippendorffAlpha`. Fields: `metric`, `value`, `interpretation`, `level`, `itemCount`, `annotatorCount`, `missingCount`, `ci?`. |
 | `AC1Result` | Result from `gwetAC1`. Fields: `metric`, `value`, `observed`, `expected`, `interpretation`, `ci?`. |

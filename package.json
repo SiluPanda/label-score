@@ -1,15 +1,12 @@
 {
   "name": "label-score",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Inter-annotator agreement metrics in JavaScript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "bin": {
-    "label-score": "dist/cli.js"
-  },
   "scripts": {
     "build": "tsc",
     "test": "vitest run",

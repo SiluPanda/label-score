@@ -43,7 +43,6 @@ export interface FleissKappaResult {
   expected: number;
   interpretation: Interpretation;
   ci?: ConfidenceInterval;
-  perCategory?: Record<string, number>;
   annotatorCount: number;
   itemCount: number;
 }
