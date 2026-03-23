@@ -90,6 +90,8 @@ export function krippendorffAlpha(
     }
   }
 
+  const sortedValues = Array.from(valueCounts.keys()).sort((a, b) => Number(a) - Number(b));
+
   if (coincidences.size === 0) {
     // No coincident pairs; return alpha = 1 (trivially)
     return {
@@ -110,7 +112,7 @@ export function krippendorffAlpha(
   let totalCoincidences = 0;
   for (const [key, count] of coincidences) {
     const [vi, vj] = JSON.parse(key) as [(string | number), (string | number)];
-    const d = disagreement(vi, vj, level);
+    const d = disagreement(vi, vj, level, sortedValues, valueCounts);
     Do += d * count;
     totalCoincidences += count;
   }
@@ -128,7 +130,7 @@ export function krippendorffAlpha(
     for (let j = 0; j < values.length; j++) {
       const nv = valueCounts.get(values[i]) ?? 0;
       const nvp = valueCounts.get(values[j]) ?? 0;
-      const d = disagreement(values[i], values[j], level);
+      const d = disagreement(values[i], values[j], level, sortedValues, valueCounts);
       De += nv * nvp * d;
     }
   }
@@ -163,21 +165,50 @@ export function krippendorffAlpha(
 /**
  * Disagreement function d(v, v') by measurement level.
  * For nominal: 0 if equal, 1 otherwise.
- * For ordinal: (rank distance)² / (max rank distance)²  — simplified to rank-distance based.
- * For interval/ratio: (v - v')².
+ * For ordinal: (Σ_{g=min(c,k)}^{max(c,k)} n_g  -  (n_c + n_k) / 2)²
+ *   where n_g = frequency of category g in all annotations (from valueCounts),
+ *   categories sorted numerically.
+ * For interval: (v - v')².
+ * For ratio: ((v - v') / (v + v'))², with d(0,0) = 0.
  */
 function disagreement(
   v: string | number,
   vp: string | number,
-  level: string
+  level: string,
+  sortedValues?: (string | number)[],
+  valueCounts?: Map<string | number, number>
 ): number {
   if (level === 'nominal') {
     return v === vp ? 0 : 1;
   }
-  if (level === 'interval' || level === 'ratio') {
+  if (level === 'interval') {
     const diff = Number(v) - Number(vp);
     return diff * diff;
   }
-  // ordinal: treat as nominal for simplicity (rank-based would need sorted category list)
+  if (level === 'ratio') {
+    const a = Number(v);
+    const b = Number(vp);
+    if (a === b) return 0;
+    const sum = a + b;
+    if (sum === 0) return 0;
+    const diff = a - b;
+    return (diff / sum) * (diff / sum);
+  }
+  // ordinal: Krippendorff rank-based distance
+  if (v === vp) return 0;
+  if (sortedValues && valueCounts) {
+    const ci = sortedValues.indexOf(v);
+    const ki = sortedValues.indexOf(vp);
+    const lo = Math.min(ci, ki);
+    const hi = Math.max(ci, ki);
+    let sigma = 0;
+    for (let g = lo; g <= hi; g++) {
+      sigma += valueCounts.get(sortedValues[g]) ?? 0;
+    }
+    const nc = valueCounts.get(v) ?? 0;
+    const nk = valueCounts.get(vp) ?? 0;
+    const inner = sigma - (nc + nk) / 2;
+    return inner * inner;
+  }
   return v === vp ? 0 : 1;
 }
